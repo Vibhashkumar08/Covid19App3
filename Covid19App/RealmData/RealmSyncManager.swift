@@ -20,60 +20,62 @@ class RealmSingletonManeger : NSObject{
        localAppVersion: "1",
        defaultRequestTimeoutMS: 30000
     )
-    static let app = App(id: "covid19app-ghrrc", configuration: configuration)
-
+   
+    
     var connection : Realm?
+    var user : User?
+    
     
 }
 
 
 class RealmSyncManger {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+   
     func showAlert()->Void{
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
-        let alert = UIAlertController(title: "Realm", message: "Data Syncronise Successfully", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        let alert = UIAlertController(title: "Realm", message: Constants.DataSynAlert, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: Constants.OkAlertTitle, style: .cancel, handler: nil))
         
         SceneDelegate().window?.rootViewController?.present(alert,animated:true,completion:nil)
     }
     
-    func establishConnection(CompletionHandler:@escaping(_ realm:Realm)->Void) -> Void{
-        
-        let credentials = Credentials.userAPIKey("WMEk3LnhyoaBnLPv1WHNBqyNP44bh8B8xtIOeHj0yHMw5QI2rWrmRo5AVBwpUFqM")
+    func establishConnection(appDelegate : AppDelegate,CompletionHandler:@escaping(_ realm:Realm)->Void) -> Void{
        
-        DispatchQueue.global(qos: .background).async {
-          
+            let app = App(id: RealmCredentials.appId, configuration: RealmSingletonManeger.configuration)
+            let credentials = Credentials.userAPIKey(RealmCredentials.userApiCredential)
         
-        
-        RealmSingletonManeger.app.login(credentials: credentials) { (result) in
            
-            switch result {
-            case .failure(let error):
-                print("Login failed: \(error.localizedDescription)")
-            case .success(let user):
-                print("Successfully logged in as user \(user)")
+        
+             app.login(credentials: credentials) { (result) in
                
-                self.appDelegate.user = user
-                self.SyncchangesBetweenDevice(user: user){ (realm) in
+                switch result {
+                case .failure(let error):
+                    print("Login failed: \(error.localizedDescription)")
+                case .success(let user):
+                    print("Successfully logged in as user \(user)")
+                    self.SyncchangesBetweenDevice(user: user){ (realm) in
                     CompletionHandler(realm)
+                    }
+                    // Now logged in, do something with user
+                    // Remember to dispatch to main if you are doing anything on the UI thread
                 }
-                // Now logged in, do something with user
-                // Remember to dispatch to main if you are doing anything on the UI thread
             }
-        }
+                
+                // do something in main thread after 3 seconds
             
-            // do something in main thread after 3 seconds
-        }
+        
+       
     }
     
     
     func SyncchangesBetweenDevice(user : User,CompletionHandler:@escaping(_ realm:Realm)->Void) -> Void {
-      
+        RealmSingletonManeger.shared.user = user
+        
       //  let user = app.currentUser
-        let partitionValue =  appDelegate.user!.id
+        guard let user = RealmSingletonManeger.shared.user  else { return  }
+        let partitionValue = user.id
         let configuration = user.configuration(partitionValue: partitionValue)
+         
         print("First configuration : ",configuration)
         Realm.asyncOpen(configuration: configuration) { result in
             switch result {
@@ -91,11 +93,7 @@ class RealmSyncManger {
                     let transferPercent = progress.fractionTransferred * 100
                     print("Uploaded \(transferredBytes)B / \(transferrableBytes)B (\(transferPercent)%)")
                 }
-                // Upload something
-               
-                RealmSingletonManeger.shared.connection = realm
-                
-                CompletionHandler(realm)
+               CompletionHandler(realm)
                 // Use realm
             }
         }

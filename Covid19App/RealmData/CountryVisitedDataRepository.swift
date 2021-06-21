@@ -19,83 +19,72 @@ protocol CountryVisitedDataRepository {
 
 struct CountryVisitedDataModal : CountryVisitedDataRepository
 {
-   
     
-    
-   
     
     func create(countryData : GetCountrydata) {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        _ =  RealmSingletonManeger.shared.connection?.configuration
-        
+
+        guard let realm = RealmSingletonManeger.shared.connection else { return }
       
-       // let realm = try! Realm(configuration: appDelegate.realm!.configuration)//appDelegate.realm
-        let realm = appDelegate.realm
-        countryData.partition = appDelegate.user!.id
-      //  print("realmConfig",realmConfig)
+        guard let user = RealmSingletonManeger.shared.user  else { return  }
+        countryData.partition = user.id
+       
         let task = GetCountrydata(Country: countryData.Country, Slug: countryData.Slug!, ISo2: countryData.ISo2)
-        task.partition = appDelegate.user!.id
-        try! realm?.write {
-            realm?.add(task)
+        task.partition = user.id
+        try! realm.write {
+            realm.add(task)
         }
         DispatchQueue.global(qos: .background).async {
-        RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in
-           
-            RealmSyncManger().showAlert()
-        }
+            RealmSyncManger().SyncchangesBetweenDevice(user: user) { (realm) in
+                DispatchQueue.main.async {
+                    RealmSyncManger().showAlert()
+                }
+            }
         }
     }
     
     func getAll() -> [GetCountrydata]? {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-       
-        let realm = appDelegate.realm
-       
-        // Access all dogs in the realm
-        let countries = realm?.objects(GetCountrydata.self)
-        
+        guard let realm = RealmSingletonManeger.shared.connection else { return nil}
+        let countries = realm.objects(GetCountrydata.self)
         var cdCountryList : [GetCountrydata] = []
-
-        countries?.forEach({ (cdCountryVisited) in
+        countries.forEach({ (cdCountryVisited) in
             cdCountryList.append(GetCountrydata(Country: cdCountryVisited.Country, Slug: cdCountryVisited.Slug ?? "", ISo2: cdCountryVisited.ISo2))
         })
-
         return cdCountryList
     }
-
     
-
+    
+    
     func delete(index: Int) -> Bool {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        guard let realm = RealmSingletonManeger.shared.connection else { return false}
         
-        let realm = appDelegate.realm
-       
-        // Access all dogs in the realm
-        let countries = realm?.objects(GetCountrydata.self)
-        let task = countries?[index] ?? GetCountrydata()
-        if ((countries!.count)>1){
-            try! realm?.write {
-                realm?.delete(task)
+        let countries = realm.objects(GetCountrydata.self)
+        let task = countries[index]
+        
+        if ((countries.count)>1){
+            try! realm.write {
+                realm.delete(task)
             }
         }else{
-            try! realm?.write {
-                realm?.deleteAll()
+            try! realm.write {
+                realm.deleteAll()
             }
         }
-       
+        
         
         DispatchQueue.global(qos: .background).async {
-        RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in
-            
-            RealmSyncManger().showAlert()
-        }
+            guard let user = RealmSingletonManeger.shared.user else { return }
+            RealmSyncManger().SyncchangesBetweenDevice(user: user) { (realm) in
+                DispatchQueue.main.async {
+                    RealmSyncManger().showAlert()
+                }
+            }
             
         }
         return true
     }
-
-
-   
-
+    
+    
+    
+    
     
 }
