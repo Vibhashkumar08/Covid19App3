@@ -73,10 +73,16 @@ struct CountryVisitedDataModal : CountryVisitedDataRepository
         // Access all dogs in the realm
         let countries = realm?.objects(GetCountrydata.self)
         let task = countries?[index] ?? GetCountrydata()
-        try! realm?.write {
-            
-            realm?.delete(task)
+        if ((countries!.count)>1){
+            try! realm?.write {
+                realm?.delete(task)
+            }
+        }else{
+            try! realm?.write {
+                realm?.deleteAll()
+            }
         }
+       
         
         DispatchQueue.global(qos: .background).async {
         RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in

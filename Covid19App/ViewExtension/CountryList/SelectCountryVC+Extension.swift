@@ -22,6 +22,7 @@ extension SelectCountryVC : UITableViewDelegate,UITableViewDataSource,UISearchBa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CountryListCell.cellIdentifier) as! CountryListCell
+        cell.selectionStyle = .none
         if searchActive == true{
             let modal = (self.filteredData[indexPath.row]) as GetCountrydata
             cell.countryNameLbl.text = modal.Country
