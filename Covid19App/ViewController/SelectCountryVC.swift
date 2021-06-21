@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class SelectCountryVC: UIViewController {
     
@@ -25,13 +26,18 @@ class SelectCountryVC: UIViewController {
         countryList.delegate = self
         countryList.dataSource = self
         searchBar.delegate = self
+       
+        
         
         countryViewModal.getCountryList() { (countryList) in
-            print(countryList ?? [])
+            
             self.dataSource = countryList?.map({ (data) in
-                return GetCountrydata(Country: data.Country, Slug: data.Slug, ISo2: data.ISO2, _partition: "Country")
+                return GetCountrydata(Country: data.Country, Slug: data.Slug, ISo2: data.ISO2)
             })
-            self.countryList.reloadData()
+            DispatchQueue.main.async {
+                self.countryList.reloadData()
+            }
+            
         }
         // Do any additional setup after loading the view.
     }

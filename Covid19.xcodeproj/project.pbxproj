@@ -150,10 +150,9 @@
 		3BBE37BC267FB9F400DA0347 /* RealmData */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< Updated upstream
+
 				3BDC7611267D4ADB00FB65CB /* CountryVisitedDataRepository.swift */,
-=======
->>>>>>> Stashed changes
+
 				3BBE37BD267FBA0A00DA0347 /* RealmManager.swift */,
 				3BBE37CB267FC15E00DA0347 /* RealmSyncManager.swift */,
 			);
@@ -186,10 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				3BBE37BC267FB9F400DA0347 /* RealmData */,
-<<<<<<< Updated upstream
-=======
-				3BDC75DE267D3FCD00FB65CB /* CoreData */,
->>>>>>> Stashed changes
+
 				3BDC752A267CCEAD00FB65CB /* Services */,
 				3BDC753D267CCF3900FB65CB /* ServiceApi */,
 				3BDC7528267CCE9F00FB65CB /* Modal */,
@@ -618,11 +614,11 @@
 				3BDC7588267CE9CE00FB65CB /* Covid19StatisticViewController.swift in Sources */,
 				3BDC75AC267CEE4400FB65CB /* ConfirmedCaseValidateResult.swift in Sources */,
 				3BDC7595267CECF400FB65CB /* Covid19StatisticViewModal.swift in Sources */,
+                
 				3BBE37BE267FBA0A00DA0347 /* RealmManager.swift in Sources */,
-<<<<<<< Updated upstream
-=======
+
 				3BDC7628267D4C5E00FB65CB /* CDCountryVisited+CoreDataClass.swift in Sources */,
->>>>>>> Stashed changes
+
 				3BDC74F5267CCE7700FB65CB /* AppDelegate.swift in Sources */,
 				3BDC755F267CD1A800FB65CB /* SelectCountryResource.swift in Sources */,
 				3BDC753F267CCF4B00FB65CB /* Common.swift in Sources */,

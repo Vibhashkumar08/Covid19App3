@@ -12,14 +12,16 @@ import RealmSwift
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var realm : Realm?
-
+    var user : User?
+   
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-       
+        DispatchQueue.global(qos: .background).async {
         RealmSyncManger().establishConnection { (realm) in
             self.realm = realm
         }
-        
+        }
         return true
     }
 

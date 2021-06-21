@@ -22,36 +22,42 @@ struct CountryVisitedDataModal : CountryVisitedDataRepository
    
     
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let realmConfig =  RealmSingletonManeger.shared.connection?.configuration
-    
+   
     
     func create(countryData : GetCountrydata) {
-
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let realmConfig =  RealmSingletonManeger.shared.connection?.configuration
+        
       
-        let realm = try! Realm()
-       
+       // let realm = try! Realm(configuration: appDelegate.realm!.configuration)//appDelegate.realm
+        let realm = appDelegate.realm!
+        countryData.partition = appDelegate.user!.id
       //  print("realmConfig",realmConfig)
+        let task = GetCountrydata(Country: countryData.Country, Slug: countryData.Slug!, ISo2: countryData.ISo2)
+        task.partition = appDelegate.user!.id
         try! realm.write {
-            realm.add(countryData)
+            realm.add(task)
         }
-       
-        RealmSingletonManeger.app.syncManager.errorHandler = { error, session in
-            // handle error
+        DispatchQueue.global(qos: .background).async {
+        RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in
+           
+            RealmSyncManger().showAlert()
+        }
         }
     }
     
     func getAll() -> [GetCountrydata]? {
-
-        let realm = try! Realm()
-        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+       
+        let realm = appDelegate.realm
+       
         // Access all dogs in the realm
-        let countries = realm.objects(GetCountrydata.self)
+        let countries = realm?.objects(GetCountrydata.self)
         
         var cdCountryList : [GetCountrydata] = []
 
-        countries.forEach({ (cdCountryVisited) in
-            cdCountryList.append(GetCountrydata(Country: cdCountryVisited.Country, Slug: cdCountryVisited.Slug ?? "", ISo2: cdCountryVisited.ISo2, _partition: "Country"))
+        countries?.forEach({ (cdCountryVisited) in
+            cdCountryList.append(GetCountrydata(Country: cdCountryVisited.Country, Slug: cdCountryVisited.Slug ?? "", ISo2: cdCountryVisited.ISo2))
         })
 
         return cdCountryList
@@ -60,12 +66,25 @@ struct CountryVisitedDataModal : CountryVisitedDataRepository
     
 
     func delete(index: Int) -> Bool {
-        let realm = try! Realm()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let realm = appDelegate.realm
+       
         // Access all dogs in the realm
-        let countries = realm.objects(GetCountrydata.self)
-        let task = countries[index]
-
-        realm.delete(task)
+        let countries = realm?.objects(GetCountrydata.self)
+        let task = countries?[index] ?? GetCountrydata()
+        try! realm?.write {
+            
+            realm?.delete(task)
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+        RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in
+            
+            RealmSyncManger().showAlert()
+        }
+            
+        }
         return true
     }
 

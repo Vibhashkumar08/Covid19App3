@@ -48,6 +48,7 @@ class ChartUtility{
         valueformatter.numberStyle = .decimal
         valueformatter.locale = Locale.current
         
+       
         let set1: LineChartDataSet = LineChartDataSet(entries: activeCaseEntry, label: "Active Cases")
         set1.drawFilledEnabled = false
         set1.axisDependency = .left // Line will correlate with left axis values
@@ -65,7 +66,6 @@ class ChartUtility{
        
         
         for i in 0..<recovered.count{
-           
            
             recoveredEntry.append(ChartDataEntry(x: Double(i+1), y: recovered[i]))
             

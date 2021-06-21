@@ -23,7 +23,10 @@ class Covid19StatisticViewController: UIViewController {
         
         covid19ViewModal.Covid19Statistic(request: ConfirmedCaseRequest(countryName: countryName ?? "")) { (covid19statisticData) in
             self.dataSource = covid19statisticData
-            self.covid19StatisticList.reloadData()
+            DispatchQueue.main.async {
+               self.covid19StatisticList.reloadData()
+                
+            }
         }
         
         let rightButtonItem = UIBarButtonItem.init(title: "Graph", style: .plain, target: self, action: #selector(rightButtonAction))

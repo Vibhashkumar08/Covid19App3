@@ -8,26 +8,21 @@
 import Foundation
 import RealmSwift
 
-let appdelegate : AppDelegate = UIApplication.shared.delegate as! AppDelegate
-
-
 enum TaskStatus: String {
+
   case Open
   case InProgress
   case Complete
-<<<<<<< Updated upstream
-    
-=======
->>>>>>> Stashed changes
+
 }
 
 class GetCountrydata: Object {
-    @objc dynamic var _id: String = UUID().uuidString
+    @objc dynamic var _id : String = ObjectId.generate().stringValue
     @objc dynamic var Country: String = ""
     @objc dynamic var Slug: String?
     @objc dynamic var ISo2: String = ""
    
-    @objc dynamic var _partition: String = ""
+    @objc dynamic var partition: String = ""
     @objc dynamic var status: String = ""
    
     override static func primaryKey() -> String? {
@@ -43,12 +38,14 @@ class GetCountrydata: Object {
         }
     }
 
-    convenience init(Country: String,Slug:String,ISo2:String,_partition:String) {
+    convenience init(Country: String,Slug:String,ISo2:String) {
         self.init()
+        
         self.Country = Country
         self.Slug = Slug
         self.ISo2 = ISo2
-        self._partition = _partition
+       
+    
     }
     
     func convertToObject()->SelectCountryData{

@@ -35,7 +35,10 @@ class RecentlyViewedViewController: UIViewController {
     func getCDresponse(){
         recentlyVisitedCountryViewModal.getCountryList { (countryList) in
             self.dataSource = countryList
-            self.recentlyVisitedCountryList.reloadData()
+            DispatchQueue.main.async {
+                self.recentlyVisitedCountryList.reloadData()
+            }
+            
         }
     }
     
