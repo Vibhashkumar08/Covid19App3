@@ -26,17 +26,17 @@ struct CountryVisitedDataModal : CountryVisitedDataRepository
     
     func create(countryData : GetCountrydata) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let realmConfig =  RealmSingletonManeger.shared.connection?.configuration
+        _ =  RealmSingletonManeger.shared.connection?.configuration
         
       
        // let realm = try! Realm(configuration: appDelegate.realm!.configuration)//appDelegate.realm
-        let realm = appDelegate.realm!
+        let realm = appDelegate.realm
         countryData.partition = appDelegate.user!.id
       //  print("realmConfig",realmConfig)
         let task = GetCountrydata(Country: countryData.Country, Slug: countryData.Slug!, ISo2: countryData.ISo2)
         task.partition = appDelegate.user!.id
-        try! realm.write {
-            realm.add(task)
+        try! realm?.write {
+            realm?.add(task)
         }
         DispatchQueue.global(qos: .background).async {
         RealmSyncManger().SyncchangesBetweenDevice(user: (appDelegate.user)!) { (realm) in
